@@ -1,0 +1,82 @@
+﻿@using Exam.Models.ViewModel
+@model RegistrationStudentViewModel
+@{
+    ViewData["Title"] = "StudentRegister";
+}
+
+<h1>StudentRegister</h1>
+
+
+
+<form asp-action="StudentRegister" method="post">
+    <table class="table table-bordered">
+        <tr>
+            <td><label asp-for="Username"></label></td>
+            <td>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="FirstName"></label></td>
+            <td>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="LastName"></label></td>
+            <td>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="Email"></label></td>
+            <td>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="Password"></label></td>
+            <td>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="ConfirmPassword"></label></td>
+            <td>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Mobile"></label></td>
+            <td>
+                <input asp-for="Mobile" class="form-control" />
+                <span asp-validation-for="Mobile" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="City"></label></td>
+            <td>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" class="btn btn-success" value="Register" />
+            </td>
+        </tr>
+
+    </table>
+
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+
+</form>
