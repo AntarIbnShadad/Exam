@@ -1,9 +1,13 @@
 ﻿using Exam.Data;
+using Exam.Migrations;
 using Exam.Models;
 using Exam.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Data;
+using System.Threading.Tasks;
 
 namespace Exam.Controllers
 {
@@ -25,19 +29,21 @@ namespace Exam.Controllers
             return View();
         }
         #region Registration
-        public IActionResult StudentRegister()
+        public IActionResult Register()
         {
             return View();
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> StudentRegister(RegistrationStudentViewModel model)
+        public async Task<IActionResult> Register(RegistrationViewModel model)
         {
             if (ModelState.IsValid)
             {
                 ApplicationUser user = new ApplicationUser
                 {
                     Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
                     UserName = model.Username,
                     PhoneNumber = model.Mobile,
                 };
@@ -45,16 +51,6 @@ namespace Exam.Controllers
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    Student student = new Student
-                    {
-                        UserId = user.Id,
-                        Name = $"{model.FirstName} {model.LastName}",
-                        Email = model.Email,
-                        Phone = model.Mobile,
-                        City = model.City
-                    };
-                    _db.Students.Add(student);
-                    _db.SaveChanges();
                     return RedirectToAction("Login");
                 }
                 foreach (var err in result.Errors)
@@ -188,6 +184,102 @@ namespace Exam.Controllers
 
         //    return View(model);
         //}
+        #endregion
+        #region Instructor
+        public IActionResult InstructorCode()
+        {
+            var iCodes = _db.InstructorCodes.Where(code => code.IsUsed == false).Select(x => x);
+            return View(iCodes);
+        }
+        public IActionResult GenerateCode()
+        {
+
+            InstructorCode iCode = new InstructorCode
+            {
+                Code = Guid.NewGuid().ToString().Substring(0, 8).ToUpper()
+            };
+            _db.InstructorCodes.Add(iCode);
+            _db.SaveChanges();
+            return RedirectToAction(nameof(InstructorCode));
+        }
+        public IActionResult EnableInstructor()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> EnableInstructor(RegistrationInstructorViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                InstructorCode ic = _db.InstructorCodes.Where(ic => ic.Code == model.Code).Select(a => a).FirstOrDefault();
+                if (ic == null)
+                {
+                    ModelState.AddModelError("0x0045","Invalid Code");
+                    return View(model);
+                }
+                var userData = await _userManager.FindByNameAsync(User.Identity.Name);
+                Instructor instructor = new Instructor
+                {
+                    Name = $"{userData.FirstName} {userData.LastName}",
+                    Major = model.Major,
+                    Email = userData.Email,
+                    UserId = userData.Id
+                };
+
+                var result = await _userManager.AddToRoleAsync(userData,"Instructor");
+                if (result.Succeeded)
+                {
+                    ic.IsUsed = true;
+                    _db.Instructors.Add(instructor);
+                    _db.SaveChanges();
+                    return RedirectToAction("Index", "Home");
+                }
+                foreach (var err in result.Errors)
+                {
+                    ModelState.AddModelError(err.Code, err.Description);
+                }
+                return View(model);
+            }
+
+            return View(model);
+        }
+        #endregion
+        #region Student
+        public IActionResult EnableStudent()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> EnableStudent(RegistrationStudentViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userData = await _userManager.FindByNameAsync(User.Identity.Name);
+                Student strudent = new Student
+                {
+                    Name = $"{userData.FirstName} {userData.LastName}",
+                    City = model.City,
+                    Email = userData.Email,
+                    UserId = userData.Id,
+                    Phone = userData.PhoneNumber
+                };
+
+                var result = await _userManager.AddToRoleAsync(userData, "Student");
+                if (result.Succeeded)
+                {
+                    _db.Students.Add(strudent);
+                    _db.SaveChanges();
+                    return RedirectToAction("Index", "Home");
+                }
+                foreach (var err in result.Errors)
+                {
+                    ModelState.AddModelError(err.Code, err.Description);
+                }
+                return View(model);
+            }
+
+            return View(model);
+        }
         #endregion
     }
 }

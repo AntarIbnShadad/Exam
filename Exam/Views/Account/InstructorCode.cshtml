@@ -1,0 +1,26 @@
+﻿@model IEnumerable<InstructorCode>
+@{
+    ViewData["Title"] = "InstructorCode";
+}
+
+<h1>InstructorCode</h1>
+
+<a asp-action="GenerateCode" class="btn btn-primary">Generate Instructor Code</a>
+
+<table class="table table-hover table-bordered shadow-sm mt-4">
+    <thead class="table-dark">
+        <tr>
+            <th>Code ID</th>
+            <th>Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var code in Model)
+        {
+            <tr>
+                <td>@code.Id</td>
+                <td>@code.Code</td>
+            </tr>
+        }
+    </tbody>
+</table>

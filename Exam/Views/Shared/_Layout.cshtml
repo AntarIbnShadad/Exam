@@ -29,9 +29,15 @@
                         </li>
                         @if (_signinManager.IsSignedIn(User))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Roles">Roles</a>
-                            </li>
+                            @if(User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="InstructorCode">Generate Instructor Code</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Roles">Roles</a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-success">Welcome @User.Identity!.Name</a>
                             </li>
@@ -42,7 +48,7 @@
                         else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="StudentRegister">Student Registration</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Registration</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>

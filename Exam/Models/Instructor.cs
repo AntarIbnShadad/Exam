@@ -11,7 +11,7 @@ namespace Exam.Models
         public string Major { get; set; }
 
         [ForeignKey("ApplicationUser")]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public ApplicationUser? ApplicationUser { get; set; }
 
     }

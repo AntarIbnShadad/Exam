@@ -1,0 +1,37 @@
+﻿@using Exam.Models.ViewModel
+@model RegistrationInstructorViewModel
+@{
+    ViewData["Title"] = "EnableInstructor";
+}
+
+<h1>EnableInstructor</h1>
+
+<form asp-action="EnableInstructor" method="post">
+    <table class="table table-bordered">
+        <tr>
+            <td><label asp-for="Code"></label></td>
+            <td>
+                <input asp-for="Code" class="form-control" />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td><label asp-for="Major"></label></td>
+            <td>
+                <input asp-for="Major" class="form-control" />
+                <span asp-validation-for="Major" class="text-danger"></span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <input type="submit" class="btn btn-success" value="Enable As Instructor" />
+            </td>
+        </tr>
+
+    </table>
+
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+
+</form>

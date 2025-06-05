@@ -1,14 +1,14 @@
 ﻿@using Exam.Models.ViewModel
-@model RegistrationStudentViewModel
+@model RegistrationViewModel
 @{
-    ViewData["Title"] = "StudentRegister";
+    ViewData["Title"] = "Register";
 }
 
-<h1>StudentRegister</h1>
+<h1>Register</h1>
 
 
 
-<form asp-action="StudentRegister" method="post">
+<form asp-action="Register" method="post">
     <table class="table table-bordered">
         <tr>
             <td><label asp-for="Username"></label></td>
@@ -58,13 +58,6 @@
             <td>
                 <input asp-for="Mobile" class="form-control" />
                 <span asp-validation-for="Mobile" class="text-danger"></span>
-            </td>
-        </tr>
-        <tr>
-            <td><label asp-for="City"></label></td>
-            <td>
-                <input asp-for="City" class="form-control" />
-                <span asp-validation-for="City" class="text-danger"></span>
             </td>
         </tr>
         <tr>
