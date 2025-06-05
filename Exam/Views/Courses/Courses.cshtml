@@ -2,6 +2,7 @@
 @model IEnumerable<Course>
 @{
     ViewData["Title"] = "Courses";
+    var enrolledCourseIds = ViewBag.EnrolledCourseIds as List<int> ?? new List<int>();
 }
 
 <h1>Courses</h1>
@@ -32,16 +33,16 @@
                         </div>
                         <div class="card-footer d-flex justify-content-between">
                             <a asp-action="EditCourse"
-                               asp-controller="Course"
-                               asp-route-id="@course.Id"
-                               class="btn btn-warning btn-sm">
+                            asp-controller="Course"
+                            asp-route-id="@course.Id"
+                            class="btn btn-warning btn-sm">
                                 Edit
                             </a>
 
                             <a asp-action="DeleteCourse"
-                               asp-controller="Course"
-                               asp-route-id="@course.Id"
-                               class="btn btn-danger btn-sm">
+                            asp-controller="Course"
+                            asp-route-id="@course.Id"
+                            class="btn btn-danger btn-sm">
                                 Delete
                             </a>
                         </div>
@@ -77,16 +78,33 @@ else if (User.IsInRole("Student")){
                                 <li><strong>Capacity:</strong> @course.Capacity</li>
                                 <li><strong>Price:</strong> $@course.Price</li>
                                 <li><strong>Duration:</strong> @course.Duration</li>
+                                @if (course.SyllabusFileName != "" || course.SyllabusFileName != null)
+                                {
+                                    <li>
+                                        <a href="~/syllabus/@course.SyllabusFileName" class="btn btn-info" download>
+                                            Download Syllabus
+                                        </a>
+                                    </li>
+                                }
                             </ul>
                         </div>
-                        <div class="card-footer d-flex justify-content-between">
-                            <a asp-action="Enroll"
-                               asp-controller="Courses"
-                               asp-route-id="@course.Id"
-                               class="btn btn-success btn-sm">
-                                Enroll In Course
-                            </a>
-                        </div>
+                        @if (!enrolledCourseIds.Contains(course.Id))
+                        {
+                            <div class="card-footer d-flex justify-content-between">
+                                <a asp-action="Enroll"
+                                   asp-controller="Courses"
+                                   asp-route-id="@course.Id"
+                                   class="btn btn-success btn-sm">
+                                    Enroll In Course
+                                </a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-footer text-muted">
+                                You are already enrolled.
+                            </div>
+                        }
                     </div>
                 </div>
             }
@@ -118,6 +136,32 @@ else{
                                 <li><strong>Capacity:</strong> @course.Capacity</li>
                                 <li><strong>Price:</strong> $@course.Price</li>
                                 <li><strong>Duration:</strong> @course.Duration</li>
+                                @if (course.SyllabusFileName == "" || course.SyllabusFileName == null){
+                                    <li>
+                                        <form asp-action="UploadPDF" asp-controller="Courses" method="post" enctype="multipart/form-data">
+                                            <input type="hidden" name="CourseId" value="@course.Id" />
+
+                                            <input type="file" name="pdfFile" />
+
+                                            <button type="submit" class="btn btn-success btn-sm">Save</button>
+                                        </form>
+                                    </li>
+
+                                }
+                                else{
+                                    <li>
+                                    <a href="~/syllabus/@course.SyllabusFileName" class="btn btn-info" download>
+                                        Download Syllabus
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <form asp-action="DeleteSyllabus" asp-controller="Courses" method="post" class="d-inline" onsubmit="return confirm('Are you sure you want to delete the syllabus?');">
+                                        <input type="hidden" name="courseId" value="@course.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm ms-2">Delete Syllabus</button>
+                                    </form>
+                                    </li>
+                                }
+
                             </ul>
                         </div>
                         <div class="card-footer d-flex justify-content-between">

@@ -14,5 +14,6 @@ namespace Exam.Models
         public int Capacity { get; set; }
         public decimal Price { get; set; }
         public TimeSpan Duration { get; set; }
+        public string? SyllabusFileName { get; set; }
     }
 }

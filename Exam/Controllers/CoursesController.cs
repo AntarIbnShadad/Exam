@@ -3,6 +3,7 @@ using Exam.Data;
 using Exam.Migrations;
 using Exam.Models;
 using Exam.Models.ViewModel;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,20 +19,36 @@ namespace Exam.Controllers
         private SignInManager<ApplicationUser> _signinManager;
         private RoleManager<IdentityRole> _roleManager;
         private Repository _repository ;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
 
-        public CoursesController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signinManager, RoleManager<IdentityRole> roleManager, Repository repository)
+        public CoursesController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signinManager, RoleManager<IdentityRole> roleManager, Repository repository, IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signinManager = signinManager;
             _roleManager = roleManager;
             _repository = repository;
+            _webHostEnvironment = webHostEnvironment;
         }
         public async Task<IActionResult> Courses()
         {
-            if (User.IsInRole("Admin") || User.IsInRole("Student")) 
+            if (User.IsInRole("Admin")) 
             {
                 var courseList = _repository.Get<Course>().Include(c => c.Instructor);
+                return View(courseList);
+            }
+            else if(User.IsInRole("Student"))
+            {
+                var courseList = _repository.Get<Course>().Include(c => c.Instructor);
+                string userId = _userManager.GetUserId(User) ?? "";
+                int currentId = _repository.GetBy<Student>(e => e.UserId == userId).Id;
+
+                var enrolledCourseIds = _repository.Get<Enrollment>()
+                    .Where(e => e.StudentId == currentId)
+                    .Select(e => e.CourseId)
+                    .ToList();
+
+                ViewBag.EnrolledCourseIds = enrolledCourseIds;
                 return View(courseList);
             }
             else
@@ -123,6 +140,49 @@ namespace Exam.Controllers
         {
             _repository.Update<Enrollment>(Id, c => c.isActive = true);
             return RedirectToAction(nameof(EnrollmentRequests));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadPDF(int CourseId, IFormFile pdfFile)
+        {
+            if (pdfFile != null && pdfFile.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "syllabus");
+                Directory.CreateDirectory(uploadsFolder);
+
+                var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(pdfFile.FileName)}";
+                var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await pdfFile.CopyToAsync(fileStream);
+                }
+                _repository.Update<Course>(CourseId,c => c.SyllabusFileName = uniqueFileName);
+
+                return RedirectToAction(nameof(Courses));
+            }
+            ModelState.AddModelError("", "Please select a file.");
+            return View();
+        }
+        [HttpPost]
+        public IActionResult DeleteSyllabus(int courseId)
+        {
+            var course = _repository.Get<Course>().FirstOrDefault(c => c.Id == courseId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+            if (!string.IsNullOrEmpty(course.SyllabusFileName))
+            {
+                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "syllabus", course.SyllabusFileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+            _repository.Update<Course>(courseId, c => c.SyllabusFileName = null); 
+
+            return RedirectToAction(nameof(Courses)); 
         }
     }
 }
