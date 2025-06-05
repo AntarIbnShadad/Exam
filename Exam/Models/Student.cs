@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Exam.Models
 {
-    public class Student
+    public class Student 
     {
         public int Id { get; set; }
         public string Name { get; set; }

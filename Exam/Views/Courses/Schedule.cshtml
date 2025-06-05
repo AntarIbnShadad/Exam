@@ -1,0 +1,35 @@
+﻿@using Exam.Models.ViewModel
+@model List<StudentScheduleViewModel>
+@{
+    ViewData["Title"] = "Schedule";
+}
+
+<h1>Schedule</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">You are not enrolled in any courses.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var course in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">@course.CourseTitle</h5>
+                        <p class="card-text">@course.CourseDescription</p>
+                        <p><strong>Instructor:</strong> @course.InstructorName</p>
+                        <p><strong>Duration:</strong> @course.Duration</p>
+                        <p>
+                            <span class="badge @(course.IsActive ? "bg-success" : "bg-secondary")">
+                                @(course.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

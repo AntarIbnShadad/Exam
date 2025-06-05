@@ -15,5 +15,6 @@ namespace Exam.Data
         public DbSet<Instructor> Instructors { get; set; }
         public DbSet<InstructorCode> InstructorCodes { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set; }
     }
 }

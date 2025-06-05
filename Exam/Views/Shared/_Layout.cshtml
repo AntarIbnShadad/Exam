@@ -38,9 +38,20 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Roles">Roles</a>
                                 </li>
                             }
+                            @if(User.IsInRole("Student"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Schedule">Schedule</a>
+                                </li>
+                            }
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Courses">Courses</a>
+                            </li>
+
                             <li class="nav-item">
                                 <a class="nav-link text-success">Welcome @User.Identity!.Name</a>
                             </li>
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="SignOut">SignOut</a>
                             </li>

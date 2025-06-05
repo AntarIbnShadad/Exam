@@ -1,0 +1,51 @@
+﻿@using Exam.Models.ViewModel
+@model CreateCourseViewModel
+@{
+    ViewData["Title"] = "CreateCourse";
+}
+
+<h1>CreateCourse</h1>
+
+<form asp-action="CreateCourse" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <table class="table table-bordered">
+        <tr>
+            <td><label asp-for="Title"></label></td>
+            <td><input asp-for="Title" class="form-control" /></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Description"></label></td>
+            <td><textarea asp-for="Description" class="form-control"></textarea></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="InstructorId"></label></td>
+            <td>
+                <select asp-for="InstructorId" asp-items="ViewBag.Instructors" class="form-control"></select>
+            </td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Capacity"></label></td>
+            <td><input asp-for="Capacity" class="form-control" /></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Price"></label></td>
+            <td><input asp-for="Price" class="form-control" /></td>
+        </tr>
+
+        <tr>
+            <td><label asp-for="Duration"></label></td>
+            <td><input asp-for="Duration" class="form-control" placeholder="hh:mm:ss" /></td>
+        </tr>
+
+        <tr>
+            <td colspan="2">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </td>
+        </tr>
+    </table>
+</form>

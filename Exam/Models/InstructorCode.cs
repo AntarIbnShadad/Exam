@@ -3,7 +3,7 @@ using System;
 
 namespace Exam.Models
 {
-    public class InstructorCode
+    public class InstructorCode 
     {
         public int Id { get; set; }
         public string Code { get; set; }
