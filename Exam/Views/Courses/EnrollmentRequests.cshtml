@@ -1,0 +1,37 @@
+﻿@using Exam.Models.ViewModel
+@model IEnumerable<ApproveEnrollmentViewModel>
+@{
+    ViewData["Title"] = "EnrollmentRequests";
+}
+
+<h1>EnrollmentRequests</h1>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">There are no pending enrollment requests.</div>
+}
+else
+{
+    <div class="row">
+        @foreach (var request in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm border border-warning">
+                    <div class="card-body">
+                        <h5 class="card-title">@request.CourseTitle</h5>
+                        <p class="card-text">@request.CourseDescription</p>
+                        <p><strong>Instructor:</strong> @request.InstructorName</p>
+                        <p><strong>Student:</strong> @request.StrudentName</p>
+                        <p><strong>Duration:</strong> @request.Duration</p>
+                    </div>
+                    <div class="card-footer text-end">
+                        <form asp-action="EnrollmentApproval" method="post">
+                            <input type="hidden" name="Id" value="@request.Id" />
+                            <button type="submit" class="btn btn-success">Approve Enrollment</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

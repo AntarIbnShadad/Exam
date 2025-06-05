@@ -59,64 +59,79 @@
     }
 }
 else if (User.IsInRole("Student")){
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var course in Model)
-        {
-            <div class="col">
-                <div class="card shadow rounded-4 h-100">
-                    <div class="card-header bg-primary text-white fw-semibold">
-                        Course ID: @course.Id
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">@course.Title</h5>
-                        <p class="card-text text-muted">@course.Description</p>
+    @if(Model.Any()){
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var course in Model)
+            {
+                <div class="col">
+                    <div class="card shadow rounded-4 h-100">
+                        <div class="card-header bg-primary text-white fw-semibold">
+                            Course ID: @course.Id
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@course.Title</h5>
+                            <p class="card-text text-muted">@course.Description</p>
 
-                        <ul class="list-unstyled">
-                            <li><strong>Instructor:</strong> @(course.Instructor?.Name ?? "N/A")</li>
-                            <li><strong>Capacity:</strong> @course.Capacity</li>
-                            <li><strong>Price:</strong> $@course.Price</li>
-                            <li><strong>Duration:</strong> @course.Duration</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a asp-action="Enroll"
-                           asp-controller="Courses"
-                           asp-route-id="@course.Id"
-                           class="btn btn-success btn-sm">
-                            Enroll In Course
-                        </a>
+                            <ul class="list-unstyled">
+                                <li><strong>Instructor:</strong> @(course.Instructor?.Name ?? "N/A")</li>
+                                <li><strong>Capacity:</strong> @course.Capacity</li>
+                                <li><strong>Price:</strong> $@course.Price</li>
+                                <li><strong>Duration:</strong> @course.Duration</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a asp-action="Enroll"
+                               asp-controller="Courses"
+                               asp-route-id="@course.Id"
+                               class="btn btn-success btn-sm">
+                                Enroll In Course
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
+    else{
+        <div class="alert alert-warning d-flex justify-content-between align-items-center">
+            <span>No courses available to enroll in.</span>
+        </div>
+    }
+    
 }
 else{
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @foreach (var course in Model)
-        {
-            <div class="col">
-                <div class="card shadow rounded-4 h-100">
-                    <div class="card-header bg-primary text-white fw-semibold">
-                        Course ID: @course.Id
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title">@course.Title</h5>
-                        <p class="card-text text-muted">@course.Description</p>
+    @if(Model.Any()){
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var course in Model)
+            {
+                <div class="col">
+                    <div class="card shadow rounded-4 h-100">
+                        <div class="card-header bg-primary text-white fw-semibold">
+                            Course ID: @course.Id
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@course.Title</h5>
+                            <p class="card-text text-muted">@course.Description</p>
 
-                        <ul class="list-unstyled">
-                            <li><strong>Instructor:</strong> @(course.Instructor?.Name ?? "N/A")</li>
-                            <li><strong>Capacity:</strong> @course.Capacity</li>
-                            <li><strong>Price:</strong> $@course.Price</li>
-                            <li><strong>Duration:</strong> @course.Duration</li>
-                        </ul>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        Course assigned to you by Admin.
+                            <ul class="list-unstyled">
+                                <li><strong>Instructor:</strong> @(course.Instructor?.Name ?? "N/A")</li>
+                                <li><strong>Capacity:</strong> @course.Capacity</li>
+                                <li><strong>Price:</strong> $@course.Price</li>
+                                <li><strong>Duration:</strong> @course.Duration</li>
+                            </ul>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            Course assigned to you by Admin.
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
+    else{
+        <div class="alert alert-warning d-flex justify-content-between align-items-center">
+            <span>No courses assigned to you.</span>
+        </div>
+    }
 }
 

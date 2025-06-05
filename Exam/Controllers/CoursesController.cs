@@ -101,5 +101,28 @@ namespace Exam.Controllers
             });
             return RedirectToAction(nameof(Schedule));
         }
+        public IActionResult EnrollmentRequests()
+        {
+            var nonActive = _repository.Get<Enrollment>()
+                .Include(e => e.Student)
+                .Include(e => e.Course)
+                .ThenInclude(e => e.Instructor)
+                .Where(record => record.isActive == false)
+                .Select(e => new ApproveEnrollmentViewModel
+                {
+                    Id = e.Id,
+                    CourseTitle = e.Course.Title,
+                    CourseDescription = e.Course.Description,
+                    InstructorName = e.Course.Instructor != null ? e.Course.Instructor.Name : "Unknown",
+                    StrudentName = e.Student != null ? e.Student.Name : "Unknown",
+                    Duration = e.Course.Duration
+                });
+            return View(nonActive);
+        }
+        public IActionResult EnrollmentApproval(int Id)
+        {
+            _repository.Update<Enrollment>(Id, c => c.isActive = true);
+            return RedirectToAction(nameof(EnrollmentRequests));
+        }
     }
 }

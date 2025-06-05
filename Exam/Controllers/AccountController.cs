@@ -5,6 +5,7 @@ using Exam.Models.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
@@ -217,7 +218,8 @@ namespace Exam.Controllers
                     ModelState.AddModelError("0x0045","Invalid Code");
                     return View(model);
                 }
-                var userData = await _userManager.FindByNameAsync(User.Identity.Name);
+                string userId = _userManager.GetUserId(User);
+                var userData = await _userManager.FindByIdAsync(userId);
                 Instructor instructor = new Instructor
                 {
                     Name = $"{userData.FirstName} {userData.LastName}",
@@ -254,7 +256,8 @@ namespace Exam.Controllers
         {
             if (ModelState.IsValid)
             {
-                var userData = await _userManager.FindByNameAsync(User.Identity.Name);
+                string userId = _userManager.GetUserId(User);
+                var userData = await _userManager.FindByIdAsync(userId);
                 Student strudent = new Student
                 {
                     Name = $"{userData.FirstName} {userData.LastName}",
@@ -279,6 +282,99 @@ namespace Exam.Controllers
             }
 
             return View(model);
+        }
+
+        public async Task<IActionResult> ListUsersUnderRole(string name) {
+            var users = await _userManager.GetUsersInRoleAsync(name);
+            ViewBag.RoleName = name;
+            return View(users);
+        }
+        public async Task<IActionResult> RemoveUserFromRole(string id,string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            await _userManager.RemoveFromRoleAsync(user,roleName);
+            return RedirectToAction(nameof(ListUsersUnderRole), new { name = roleName});
+        }
+        public async Task<IActionResult> AddUserToRole(string roleName)
+        {
+            var users = _userManager.Users.ToList();
+
+            var model = new AddUserToRoleViewModel
+            {
+                RoleName = roleName,
+            };
+            ViewBag.Users = users.Select(u => new SelectListItem
+            {
+                Value = u.Id,
+                Text = u.UserName
+            });
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> AddUserToRole(AddUserToRoleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.SelectedUserId);
+
+                var result = await _userManager.AddToRoleAsync(user, model.RoleName);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(ListUsersUnderRole), new { name = model.RoleName });
+                }
+                foreach (var err in result.Errors)
+                {
+                    ModelState.AddModelError(err.Code, err.Description);
+                }
+                return View(model);
+            }
+            return View(model);
+        }
+        public async Task<IActionResult> EditRole(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            var model = new EditRoleViewModel
+            {
+                Id = role.Id,
+                RoleName = role.Name
+            };
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditRole(EditRoleViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var role = await _roleManager.FindByIdAsync(model.Id);
+
+                role.Name = model.RoleName;
+                var result = await _roleManager.UpdateAsync(role);
+
+                if (result.Succeeded)
+                {
+
+                    return RedirectToAction("Roles");
+                }
+                foreach (var err in result.Errors)
+                {
+                    ModelState.AddModelError(err.Code, err.Description);
+                }
+                return View(model);
+            }
+
+            return View(model); 
+        }
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await _roleManager.FindByIdAsync(id);
+            if (role != null)
+            {
+                await _roleManager.DeleteAsync(role);
+            }
+
+            return RedirectToAction("Roles"); 
         }
         #endregion
     }

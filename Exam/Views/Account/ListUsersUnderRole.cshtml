@@ -1,0 +1,45 @@
+﻿@using Exam.Data
+@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "ListUsersUnderRole";
+}
+
+<h1>ListUsersUnderRole</h1>
+
+<div class="mb-3">
+    <a asp-action="AddUserToRole"
+       asp-controller="Account"
+       asp-route-roleName="@ViewBag.RoleName"
+       class="btn btn-primary">
+        Add User to Role
+    </a>
+</div>
+
+@if (Model != null && Model.Any())
+{
+    @foreach (var user in Model)
+    {
+        <div class="card mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Name: @user.FirstName @user.LastName</h5>
+                <p class="card-text"><strong>Email:</strong> @user.Email</p>
+                <p class="card-text"><strong>Username:</strong> @user.UserName</p>
+            </div>
+            <div class="card-footer">
+                <a asp-action="RemoveUserFromRole"
+                   asp-controller="Account"
+                   asp-route-id="@user.Id"
+                   asp-route-roleName="@ViewBag.RoleName"
+                   class="btn btn-danger">
+                    Remove from Role
+                </a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-warning">
+        No users assigned to this role.
+    </div>
+}
