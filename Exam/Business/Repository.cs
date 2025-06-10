@@ -41,9 +41,16 @@ namespace Exam.Business
             Save();
         }
 
-        public void Delete<T>(T entity) where T : class
+        public void Delete<T>(Expression<Func<T, bool>> predicate) where T : class
         {
-            _db.Set<T>().Remove(entity);
+            var dbSet = _db.Set<T>();
+            var entity = dbSet.FirstOrDefault(predicate);
+            if (entity == null)
+            {
+                throw new Exception($"{typeof(T).Name} not found for the given condition.");
+            }
+
+            dbSet.Remove(entity);
             Save();
         }
 

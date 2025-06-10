@@ -9,7 +9,7 @@ namespace Exam.Business
         T GetBy<T>(Expression<Func<T, bool>> predicate) where T : class;
         void Add<T>(T entity) where T : class;
         void Update<T>(object id, Action<T> updateFn) where T : class;
-        void Delete<T>(T entity) where T : class;
+        void Delete<T>(Expression<Func<T, bool>> predicate) where T : class;
         void Save();
     }
 }

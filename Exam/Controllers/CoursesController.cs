@@ -141,6 +141,11 @@ namespace Exam.Controllers
             _repository.Update<Enrollment>(Id, c => c.isActive = true);
             return RedirectToAction(nameof(EnrollmentRequests));
         }
+        public IActionResult EnrollmentReject(int Id)
+        {
+            _repository.Delete<Enrollment>(e => e.Id == Id);
+            return RedirectToAction(nameof(EnrollmentRequests));
+        }
 
         [HttpPost]
         public async Task<IActionResult> UploadPDF(int CourseId, IFormFile pdfFile)
@@ -183,6 +188,21 @@ namespace Exam.Controllers
             _repository.Update<Course>(courseId, c => c.SyllabusFileName = null); 
 
             return RedirectToAction(nameof(Courses)); 
+        }
+        public IActionResult ListStudents(int id)
+        {
+            var studentList = _repository.Get<Enrollment>()
+                .Where(e => e.CourseId == id)
+                .Include( e => e.Student)
+                .Select(e => new Student
+                {
+                    Id = e.Student.Id,
+                    Name = e.Student.Name,
+                    Email = e.Student.Email,
+                    Phone = e.Student.Phone,
+                });
+
+            return View(studentList);
         }
     }
 }

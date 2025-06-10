@@ -1,0 +1,33 @@
+﻿@model IEnumerable<Student>
+@{
+    ViewData["Title"] = "ListStudents";
+}
+
+<h1>ListStudents</h1>
+@if(Model.Any()){
+    <table class="table table-hover table-bordered shadow-sm mt-4">
+        <thead class="table-dark">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Pnone</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var enroll in Model)
+            {
+                <tr>
+                    <td>@enroll.Name</td>
+                    <td>@enroll.Email</td>
+                    <td>@enroll.Phone</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else{
+    <div class="alert alert-warning">
+        No students enrolled in this course.
+    </div>
+}
+<a asp-action="Courses" class="btn btn-danger">Back</a>
